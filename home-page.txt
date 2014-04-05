@@ -1,0 +1,233 @@
+ <%@ Page Language="C#" %>
+
+<script runat="server">
+
+</script>
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script> 
+<script src="bootstrap/js/bootstrap.js"></script>  
+<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
+<meta charset='utf-8' />
+
+<title>MusicMania</title>
+
+<style>
+    .body-pad
+    {
+        padding-top:60px;
+    }
+    .display-left
+    {
+        display:inline;
+    }
+    .search-box
+    {
+        border : 1px solid;
+        border-radius : 25px;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="max-height:50px;">
+        <div class="navbar-header" style="width:50%;margin:0px;"><a class="navbar-brand" href="home_page.aspx">MusicMania</a></div>
+        <div><div class="glyphicon glyphicon-search navbar-brand btn-search" style="float:right; right:35px; position:fixed;"></div></div>
+    </div>
+
+        <!-- SEARCH BOX -->
+        <div class="row search-div" style="padding-top:50px; display:none;">
+            <div class="col-md-6"></div>
+            <div class="col-md-2"></div>
+            <div class="col-md-4 search-box" style="background-color:aqua;margin:0px;">
+                <select class="form-control dropDown" style="margin-top:10px;">
+                    <option class="search-artist">By Artist</option>
+                    <option class="search-track">By Track</option>
+                    <option class="search-album">By Album</option>
+                </select>
+                <input type="text" class="form-control search-name" style="margin-top:10px;"/>
+                <input type="button" class="form-control btn-primary search-click" value="Search" style="margin-top:10px; margin-bottom:10px;" />
+            </div>
+        </div>
+        <!-- SEARCH BOX ENDS -->
+
+        <!-- SEARCH RESULTS DISPLAY -->
+
+        <!-- SEARCH RESULTS DISPLAY -->
+
+        <!-- HOME PAGE DISPLAY -->
+        <div class="display-top page home">
+        <p style="font-size:20px;margin:15px;" class="body-pad">Top Artists</p>
+        <ul class="artist-display"></ul><br />
+        <p style="font-size:20px;margin:15px;">Top Tracks</p>
+        <ul class="track-display"></ul>
+        </div>
+        <!-- HOME PAGE DISPLAY ENDS -->
+        </div>
+    <!-- CONTAINER ENDS -->
+
+    <!-- IMAGE CLICKED DISPLAY -->
+    <div class="container">
+        <div class="display-details page results" style="display:none">
+            <div class="row" style="padding-top:100px;">
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-2 dis-image" ></div> 
+                    <div class="col-md-6 dis-title" ></div>
+                    <div class="col-md-2">
+                    </div>
+                </div>
+                <br /><br />
+                 <div class="row">
+                    <div class="col-md-9 dis-reviews">
+                        <h1>Reviews</h1><br />
+                        <ul class="review-list"></ul>
+                    </div> 
+                </div>
+      <!--          <div class="row dis-reviews">
+                </div> -->
+            </div>
+                <div class="col-md-2 dis-top-tracks" style="overflow:auto; height:500px;">
+                        <p class="sidebar" style="font-size:18px;"></p>
+                </div> 
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script>
+
+    // FOR SEARCHING
+    $(function () {
+        $(".btn-search").click(searchbtnIn);
+    })
+
+    function searchbtnIn() {
+        if ($(".search-div").css("display") == "none") {
+            $(".search-div").css("display", "block");
+        }
+        else {
+            $(".search-div").css("display", "none");
+        }
+    }
+
+    // SEARCH BUTTON IN HIDDEN DIV CLICKED
+    $(function () {
+        $(".search-click").click(SearchForText);
+    })
+
+    function SearchForText() {
+        var name = $(".search-name").val();
+        if ($(".dropDown option:selected").text() == 'By Artist') {
+            $.ajax({
+                url: "http://ws.audioscrobbler.com/2.0/?method=artist.search&api_key=9bc813cb16b15d5f0f7a9e87459e8f16&format=json&artist=" + name,
+                success: function (response) {
+                    console.log(response);
+                }
+            })
+            alert("Artist " + $(".search-name").val());
+        } else if ($(".dropDown option:selected").text() == 'By Album') {
+            alert("Album " + $(".search-name").val());
+        } else if ($(".dropDown option:selected").text() == 'By Track') {
+            alert("Track " + $(".search-name").val());
+        }
+    }
+
+    // ARTIST DETAILS *****************************************************************************************************
+    function artist_clicked(response) {
+        var artist = response.data.artists.artist[response.target.id].name;
+        $(".display-top").css("display", "none");
+        $(".display-details").css("display", "block");
+        var dis_title = $(".dis-title");
+        var img = $("<img>").attr("src",response.data.artists.artist[response.target.id].image[3]["#text"])
+                            .css("height", "200px")
+                            .css("width", "150px")
+                            .css("display", "block")
+                            .css("margin", "0 auto")
+                            .css("float", "right")
+                             .css("float", "right");
+        var span = $("<span>").addClass("glyphicon glyphicon-music")
+                          .html(response.data.artists.artist[response.target.id].listeners+ " listeners");
+        var dis_image = $(".dis-image").append(img,span);
+        var title = $("<h1>").text(response.data.artists.artist[response.target.id].name)
+                             .css("margin", "0px")
+                             .appendTo(dis_title);
+        $.ajax({
+            url: "http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&api_key=9bc813cb16b15d5f0f7a9e87459e8f16&format=json&artist=" + artist,
+            success: function (dataInfo) {
+                var info = $("<p>").html(dataInfo.artist.bio.summary)
+                                    .appendTo(dis_title);
+            }
+        })
+        // TO DISPLAY TOP TRACKS OF EACH ARTIST
+        $.ajax({
+        url: "http://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&api_key=9bc813cb16b15d5f0f7a9e87459e8f16&format=json&artist=" + artist,
+        success: function (trackInfo) {
+            var sidebarTitle = $(".sidebar").text("Top Albums");
+            var divForTracks = $(".dis-top-tracks");
+            for (var i = 0 ; i < trackInfo.topalbums.album.length ; i++) {
+                if (trackInfo.topalbums.album[i].image != null) {
+                    var trackImg = $("<img>").attr("src", trackInfo.topalbums.album[i].image[3]["#text"])
+                                             .css("width", "100%")
+                                             .css("padding-bottom","10px")
+                                             .css("height", "170px")
+                                             .appendTo(divForTracks);
+                }
+            }
+         }
+        })
+        // DISPLAY REVIEW OF ARTISTS
+        $.ajax({
+            url: "http://developer.echonest.com/api/v4/artist/reviews?api_key=FZVLRKREHKVSXN86B&format=json&results=10&name=" + artist,
+            success: function (reviews) {
+                var reviewDiv = $(".dis-reviews");
+                var ul = $(".review-list");
+                console.log(reviews);
+                for (var i = 0 ; i < reviews.response.reviews.length ; i++) {
+                    var li = $("<li>").addClass("well well-lg")
+                                      .css("list-style-type", "none")
+                                      .text(reviews.response.reviews[i].summary)
+                                      .appendTo(ul);
+                }
+            }
+        })
+    }
+    //**********************************************************************************************
+
+    // TRACK DETAILS
+    function track_clicked(response) {
+        console.log(response);
+        var mbid = response.data.tracks.track[response.target.id].mbid;
+
+        $(".display-top").css("display", "none");
+        $(".display-details").css("display", "block");
+        var dis_image = $(".dis-image");
+        var img = $("<img>").attr("src", response.data.tracks.track[response.target.id].image[3]["#text"])
+                            .css("height", "200px")
+                            .css("width", "150px")
+                            .css("display", "block")
+                            .css("margin", "0 auto")
+                             .css("float", "right")
+                            .appendTo(dis_image);
+        var title = $("<h1>").text(response.data.tracks.track[response.target.id].name)
+                             .css("margin", "0px");
+        var pArtist = $("<p>").text("By : " + response.data.tracks.track[response.target.id].artist.name)
+                              .css("font-size", "20px");
+        var duration = $("<p>").text("Duration : " + ((response.data.tracks.track[response.target.id].duration) / 60).toFixed(2) + " minutes");
+        var playButton = $("<button>").addClass("btn btn-primary")
+                                      .text("Play Online")
+                                      .css("margin-right","10px");
+        var playlistButton = $("<button>").addClass("btn btn-primary")
+                                          .text("Add To Playlist");
+        var dis_title = $(".dis-title").append(title, "<br/>", pArtist, duration, "<br/>", "<br/>", playButton,playlistButton);  
+    }
+ </script> 
+    <script src="javascript/project.js"></script>
+    <script src="javascript/project.home.js"></script>
+    <script src="javascript/project.results.js"></script>
+</html>

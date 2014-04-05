@@ -1,0 +1,96 @@
+    #mastermenu ul 
+    {
+        margin:0; 
+        list-style:none;
+        background-color: black;
+        height: 40px;
+        padding:10px;
+    }
+    #mastermenu li 
+    {
+        float:left;
+        position:relative;
+        display:block;
+        padding:10px;
+    }
+    #mastermenu li ul 
+    {
+        display:none;
+        position:absolute;
+    }
+    #mastermenu li:hover ul
+    {
+        color : red;
+        display:block;
+        height:auto; 
+        width:8em;
+        display : block;
+    }
+    #mastermenu li ul li
+    {
+        clear:both;
+        border-style:none;
+    }
+
+    .largefont { 
+  color: #0066FF; 
+  font-family:arial; 
+  font-size: 30px;
+  line-height:20px;
+}
+
+    a
+    {
+        color: #08f;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    a:visited
+    {
+        color: #88f;
+    }
+
+    a:hover
+    {
+        color: #f00;
+    }
+
+    p
+    {
+        text-align: justify;
+    }
+
+    .mydiv
+    {
+        margin-top:50px;
+        width:auto;
+        height:auto;
+    }
+
+    .myimage
+    {
+        border:2px solid;
+        float:left;
+        width:90%;
+        border-radius:25px;
+        height:350px;
+        margin:15px;
+    }
+
+    .textdisplay
+    {
+        margin-left:10px;
+    }
+    body {
+        width:auto;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .pad {
+        padding: 10px;
+
+    }
+
